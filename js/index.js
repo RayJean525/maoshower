@@ -232,7 +232,7 @@ $(function () {
 
         let selectedOptions = [];
         let selectedplans = [[]]; //方案選項
-        let englishlist=[]//方案總項目老二
+        let englishlist=[]//方案總項目大老二
         let englishlistp = [];//方案項目
         let planshtml = "";
         let total;
