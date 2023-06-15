@@ -234,13 +234,39 @@ $(function () {
         let selectedplans = [[]]; //方案選項
         let englishlist=[]//方案總項目大老二
         let englishlistp = [];//方案項目
+        let examplehtml = "";
         let planshtml = "";
+        let totallibrary;
         let total;
         
         //勾選的方案項目
         $('.fm_plan input[type="checkbox"]:checked').each(function() {
             if($(this).val() !== "stay"){
                 selectedOptions.push($(this).val());
+                //新增範例方案項目
+                switch ($(this).val()) {
+                    case "strollday":
+                        examplehtml += `公園散步一日兩次 = ${planschecked["strollday"] * daysDiff * quantity}元/${daysDiff}天<br>`
+                        break
+                    case "dayshower":
+                        examplehtml += `住宿當日洗香香 = ${planschecked["dayshower"] * quantity}元/次<br>`
+                        break
+                    case "homeshower":
+                        examplehtml += `回家前洗香香 = ${planschecked["homeshower"] * quantity}元/次<br>`
+                        break
+                    case "sleep":
+                        examplehtml += `褓姆陪伴睡覺 = ${planschecked["sleep"] * daysDiff * quantity}元/${daysDiff}天<br>`
+                        break
+                    case "medicine":
+                        examplehtml += `用藥 = ${planschecked["medicine"] * daysDiff * quantity}元/${daysDiff}天<br>`
+                        break
+                    default:
+                        $(".modal-p").text(
+                            "新增範例方案項目失敗！！新增範例方案項目功能壞掉請call老二瑞君！！"
+                        );
+                        myModal.show();
+                        break
+                }
             }
         });
         
@@ -252,20 +278,21 @@ $(function () {
 
         if($(".holidayN").is(":checked")){
             holidaychecked = evenholiday + $("input[name='holiday']:checked").data("holiday") + `=${(sizemoney * quantity) + 200 }元/日`
+            // 判斷是否都是連續假日
             if(daysDiff - evenholiday !== 0){
-                total =  sizemoney * quantity * (daysDiff - evenholiday)
+                totallibrary =  sizemoney * quantity * (daysDiff - evenholiday)
                 selectedplans = selectedplans.map(function (subset) {
                     return ["stay","evenholiday"].concat(subset);
                 });
             } else {
-                total =  sizemoney * quantity * daysDiff
+                totallibrary =  sizemoney * quantity * daysDiff
                 selectedplans = selectedplans.map(function (subset) {
                     return ["evenholiday"].concat(subset);
                 });
             }
         } else {
             holidaychecked = $("input[name='holiday']:checked").data("holiday");
-            total =  sizemoney * quantity * daysDiff
+            totallibrary =  sizemoney * quantity * daysDiff
             selectedplans = selectedplans.map(function (subset) {
                 return ["stay"].concat(subset);
             });
@@ -284,11 +311,12 @@ $(function () {
             }
         }
         
-
+        //方案新增
         for(let h = 0; h < selectedplans.length; h++){
-            let totaltxt = ``
+            let totaltxt = ``;
             englishlistp.push(englishlist[h]);
             planshtml += `<br><p class="word_red fs-5 fw-bold lh-base">${englishlist[h]}方案</p>`
+            total = totallibrary;
             for(let t = 0; t < selectedplans[h].length; t++){
                 switch (selectedplans[h][t]) {
                     case "stay":
@@ -342,7 +370,7 @@ $(function () {
                         );
                         myModal.show();
                         break
-                  }
+                }
             }
 
             planshtml += `
@@ -394,16 +422,7 @@ $(function () {
                             <span class="word_green">
                                 👽 "${name}" = ${quantity}隻${sizeval}住宿 ${sizemoney * quantity}/日<br>
                                 ${getStartMonth}/${getStartDay}~${getEndMonth}/${getEndDay} = ${daysDiff}天 (${holidaychecked})<br>
-                                住宿當日洗香香 =${
-                                    planschecked["dayshower"] * quantity
-                                }元/次<br>
-                                公園散步一日兩次 =${
-                                    planschecked["strollday"] * daysDiff * quantity
-                                }元/${daysDiff}天<br>
-                                褓姆陪伴睡覺 =${
-                                    planschecked["sleep"] * daysDiff * quantity
-                                }元/${daysDiff}天<br>
-                                回家前洗香香 =${planschecked["homeshower"] * quantity}元/次<br>
+                                ${examplehtml}
                             </span>
                         </p>
                         
